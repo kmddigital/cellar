@@ -24,9 +24,10 @@
     }
   ],
   "scripts": {
-    "start": "nodemon cellar.js",
+    "start": "node cellar.js",
+    "start-dev": "nodemon cellar.js",
     "test": "semistandard --verbose | snazzy",
-	"fix": "semistandard --fix"
+    "fix": "semistandard --fix"
   },
   "dependencies": {
     "body-parser": "~1.13.2",
