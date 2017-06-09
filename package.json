@@ -1,7 +1,28 @@
 {
   "name": "cellar",
   "version": "0.0.1",
+  "description": "Lightweight Node.js CMS",
   "private": true,
+  "keywords": [
+    "cms",
+    "nodejs",
+    "express"
+  ],
+  "author": "KMD Digital",
+  "maintainers": [
+    {
+      "name": "Keith C-R",
+      "email": "keith@kmddigital.com",
+      "web": ""
+    }
+  ],
+  "homepage": "https://github.com/kmddigital/cellar",
+  "repositories": [
+    {
+      "type": "git",
+      "url": "https://github.com/kmddigital/cellar.git"
+    }
+  ],
   "scripts": {
     "start": "nodemon cellar.js",
     "test": "semistandard --verbose | snazzy",
