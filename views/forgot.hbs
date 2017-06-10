@@ -1,0 +1,37 @@
+<div class="container forgot">
+  <div class="justify-content-center align-items-center">
+    <div class="row justify-content-center align-items-center">
+      <div class="card">
+        <div class="card-block">
+          <form method="POST">
+            <h4 class="display-4 text-center">Forgot Password</h4>
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" name="email" id="email" placeholder="Email" class="form-control" autofocus>
+            </div>
+            {{#if messages.info}}
+              <div role="alert" class="alert alert-info">
+                {{#each messages.info}}
+                  <div>{{msg}}</div>
+                {{/each}}
+              </div>
+            {{/if}}
+            {{#if messages.error}}
+              <div role="alert" class="alert alert-danger">
+                {{#each messages.error}}
+                  <div>{{msg}}</div>
+                {{/each}}
+              </div>
+            {{/if}}
+            <button type="submit" class="btn btn-lg btn-outline-primary">Reset Password</button>
+          </form>
+        </div>
+        <div class="card-block" style="background-color: #F3F3F3">
+          <p class="text-center">
+            Remembered Your Password? <a href="/login">Login</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
