@@ -25,7 +25,7 @@ Cellar is a **work in progress** and at this time is **NOT** ready for use. Belo
   - [ ] Custom Types
 - [x] SMTP Support
 - [ ] WYSIWYG Editor
-- [ ] Setup Utility
+- [x] Setup Utility
 
 ###### Optional/Future Releases:
 - [ ] Restful API
@@ -33,7 +33,7 @@ Cellar is a **work in progress** and at this time is **NOT** ready for use. Belo
 - [ ] Automatic Updater
 
 ## Getting Started
-*Requires [Node.js](https://nodejs.org/en/).*
+*Requires [Node.js](https://nodejs.org/en/) and [MongoDB](https://www.mongodb.com/download-center).*
 
 #### Production
 ```bash
@@ -41,8 +41,8 @@ Cellar is a **work in progress** and at this time is **NOT** ready for use. Belo
 git clone https://github.com/kmddigital/cellar.git
 # install (production) dependencies
 npm install --production
-# start server
-npm start
+# run setup script
+npm run setup
 ```
 
 #### Development
@@ -56,5 +56,5 @@ npm run test
 # automatically fix style errors (if needed)
 npm run fix
 # start server
-npm run start-dev
+npm run dev
 ```

@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 
 var userRoleSchema = mongoose.Schema({
+  name: String,
   permissions: [String]
 });
 

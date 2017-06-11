@@ -1,3 +1,16 @@
+var chalk = require('chalk');
+var fs = require('fs');
+
+fs.stat('.env', function (err, stat) {
+  if (err && err.code === 'ENOENT') {
+    console.log('[' + chalk.bold.red('Error') + '] Failed to find .env file. Have you run the setup yet?');
+    process.exit(1);
+  } else if (err && err.code !== 'ENOENT') {
+    console.log('[' + chalk.bold.red('Error') + '] Failed to access .env file:' + err);
+    process.exit(1);
+  }
+});
+
 require('dotenv-safe').load();
 var env = process.env;
 
@@ -32,7 +45,7 @@ app.locals.transporter = nodemailer.createTransport({
   pool: true,
   host: env.SMTP_HOST,
   port: env.SMTP_PORT,
-  secure: env.SMTP_USE_TLS,
+  secure: env.SMTP_USE_TLS === 'true',
   auth: {
     user: env.SMTP_USER,
     pass: env.SMTP_PASS
@@ -173,7 +186,7 @@ var server = http.createServer(app);
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(port);
+server.listen(port, '0.0.0.0');
 server.on('error', onError);
 server.on('listening', onListening);
 

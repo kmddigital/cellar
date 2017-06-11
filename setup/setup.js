@@ -1,3 +1,15 @@
+var fs = require('fs');
+
+fs.stat('.env', function (err, stat) {
+  if (err == null) {
+    console.log('[' + chalk.bold.red('Error') + '] Cellar is already setup');
+    process.exit(0);
+  } else if (err.code !== 'ENOENT') {
+    console.log('[' + chalk.bold.red('Error') + ']' + err);
+    process.exit(0);
+  }
+});
+
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
@@ -9,6 +21,8 @@ var session = require('express-session');
 var hbs = require('hbs');
 var compression = require('compression');
 var crypto = require('crypto');
+var publicIp = require('public-ip');
+var chalk = require('chalk');
 
 var debug = require('debug')('cellar:server');
 var http = require('http');
@@ -19,6 +33,7 @@ var app = express();
 module.exports = app;
 
 var mongoose = require('mongoose');
+mongoose.Promise = global.Promise;
 
 // view engine setup
 app.set('views', path.join(__dirname, '../', 'views'));
@@ -79,10 +94,14 @@ router.post('/setup/title', function (req, res, next) {
 });
 
 router.get('/setup/database', function (req, res, next) {
-  res.render('setup', {
-    step: 'database',
-    layout: 'setuplayout.hbs'
-  });
+  if (app.locals.SITE_TITLE) {
+    res.render('setup', {
+      step: 'database',
+      layout: 'setuplayout.hbs'
+    });
+  } else {
+    res.redirect('/setup/');
+  }
 });
 
 router.post('/setup/database', function (req, res, next) {
@@ -112,49 +131,69 @@ router.post('/setup/database', function (req, res, next) {
   mongoose.connect(app.locals.MONGODB);
 
   app.locals.db = mongoose.connection;
+
+  let sent = false; // hack to prevent sending multiple responses
   app.locals.db.once('error', function () {
-    app.locals.db.close();
-    req.flash('error', {
-      msg: 'Failed to connect to MongoDB.'
-    });
-    return res.redirect('/setup/database');
+    if (!sent) {
+      sent = true;
+      app.locals.db.close();
+      req.flash('error', {
+        msg: 'Failed to connect to MongoDB.'
+      });
+      return res.redirect('/setup/database');
+    }
   });
   app.locals.db.once('open', function () {
-    req.flash('success', {
-      msg: 'Successfully connected to MongoDB.'
-    });
-    return res.redirect('/setup/mail');
+    if (!sent) {
+      return res.redirect('/setup/mail');
+    }
   });
 });
 
 router.get('/setup/mail', function (req, res, next) {
-  res.render('setup', {
-    step: 'mail',
-    layout: 'setuplayout.hbs'
-  });
+  if (app.locals.SITE_TITLE && app.locals.MONGODB) {
+    res.render('setup', {
+      step: 'mail',
+      layout: 'setuplayout.hbs'
+    });
+  } else {
+    res.redirect('/setup/');
+  }
 });
 
 router.post('/setup/mail', function (req, res, next) {
-  req.assert('host', 'SMTP Host cannot be empty').notEmpty();
-  req.assert('port', 'SMTP Port cannot be empty').notEmpty();
-  req.assert('port', 'SMTP Port must be an int').isInt();
-  req.assert('username', 'SMTP Username cannot be empty').notEmpty();
-  req.assert('username', 'SMTP Username must be a valid email address').isEmail();
-  req.assert('pass', 'SMTP Password cannot be empty').notEmpty();
+  req.assert('smtphost', 'SMTP Host cannot be empty').notEmpty();
+  req.assert('smtpport', 'SMTP Port cannot be empty').notEmpty();
+  req.assert('smtpport', 'SMTP Port must be an int').isInt();
+  req.assert('smtpusername', 'SMTP Username cannot be empty').notEmpty();
+  req.assert('smtpusername', 'SMTP Username must be a valid email address').isEmail();
+  req.assert('smtppassword', 'SMTP Password cannot be empty').notEmpty();
 
   var errors = req.validationErrors();
 
   if (errors) {
     req.flash('error', errors);
-    return res.redirect('/setup/database');
+    return res.redirect('/setup/mail');
   }
+
+  app.locals.SMTP_HOST = req.body.smtphost;
+  app.locals.SMTP_PORT = req.body.smtpport;
+  app.locals.SMTP_USE_TLS = req.body.smtptls === 'on' ? 'true' : 'false';
+  app.locals.SMTP_USER = req.body.smtpusername;
+  app.locals.SMTP_PASS = req.body.smtppassword;
+
+  res.redirect('/setup/auth');
 });
 
 router.get('/setup/auth', function (req, res, next) {
-  res.render('setup', {
-    step: 'auth',
-    layout: 'setuplayout.hbs'
-  });
+  if (app.locals.SITE_TITLE && app.locals.MONGODB && app.locals.SMTP_HOST) {
+    res.render('setup', {
+      step: 'auth',
+      layout: 'setuplayout.hbs'
+    });
+  } else {
+    res.redirect('/setup/');
+  }
 });
 
 router.post('/setup/auth', function (req, res, next) {
@@ -175,39 +214,42 @@ router.post('/setup/auth', function (req, res, next) {
     return res.redirect('/setup/auth');
   }
 
-  User.findOne(
-    {
-      email: req.body.email
-    },
-    function (err, user) {
-      if (err) {
+  User.findOne({
+    email: req.body.email
+  }, function (err, user) {
+    if (err) {
 
-      }
-      if (user) {
-        req.flash('error', {
-          msg: 'The email address you have entered is already associated with another account.'
-        });
-        return res.redirect('/setup/auth');
-      }
-      user = new User({
-        username: req.body.username,
-        email: req.body.email,
-        password: req.body.password
+    }
+    if (user) {
+      req.flash('error', {
+        msg: 'The email address you have entered is already associated with another account.'
       });
-      user.save(function (err) {
-        if (err) {
-          console.error(err);
-        }
-        res.redirect('/setup/done');
-      });
+      return res.redirect('/setup/auth');
+    }
+    user = new User({
+      username: req.body.username,
+      email: req.body.email,
+      password: req.body.password,
+      role: 'admin'
     });
+    user.save(function (err) {
+      if (err) {
+        console.error(err);
+      }
+      res.redirect('/setup/final');
+    });
+  });
 });
 
 router.get('/setup/final', function (req, res, next) {
-  res.render('setup', {
-    step: 'final',
-    layout: 'setuplayout.hbs'
-  });
+  if (app.locals.SITE_TITLE && app.locals.MONGODB && app.locals.SMTP_HOST) {
+    res.render('setup', {
+      step: 'final',
+      layout: 'setuplayout.hbs'
+    });
+  } else {
+    res.redirect('/setup/');
+  }
 });
 
 router.post('/setup/final', function (req, res, next) {
@@ -216,12 +258,13 @@ router.post('/setup/final', function (req, res, next) {
       req.flash('error', {
         msg: 'Failed to generate session secret.'
       });
-      return res.redirect('/setup/smtp');
+      return res.redirect('/setup/final');
     }
+
     var token = buf.toString('hex');
-    var config = 'SITE_TITLE=' + app.locals.SITE_TITLE + '\nMONGODB=' + app.locals.MONGODB +
-    '\nSESSION_SECRET=' + token + '\nSMTP_HOST=' + req.body.host + '\nSMTP_PORT=' + req.body.port +
-    '\nSMTP_USE_TLS=' + req.body.tls + '\nSMTP_USER=' + req.body.user + '\nSMTP_PASS=' + req.body.pass;
+    var config = 'SITE_TITLE="' + app.locals.SITE_TITLE + '"\nMONGODB="' + app.locals.MONGODB +
+    '"\nSESSION_SECRET="' + token + '"\nSMTP_HOST="' + app.locals.SMTP_HOST + '"\nSMTP_PORT="' + app.locals.SMTP_PORT +
+    '"\nSMTP_USE_TLS="' + app.locals.SMTP_USE_TLS + '"\nSMTP_USER="' + app.locals.SMTP_USER + '"\nSMTP_PASS="' + app.locals.SMTP_PASS + '"';
 
     var fs = require('fs');
     fs.writeFile('.env', config, function (err) {
@@ -238,14 +281,31 @@ router.post('/setup/final', function (req, res, next) {
 });
 
 router.get('/setup/done', function (req, res, next) {
-  res.render('setup', {
-    step: 'done',
-    layout: 'setuplayout.hbs'
+  fs.stat('.env', function (err, stat) {
+    if (err == null) {
+      res.render('setup', {
+        step: 'done',
+        layout: 'setuplayout.hbs'
+      });
+    } else {
+      res.redirect('/setup/');
+    }
   });
 });
 
 router.post('/setup/done', function (req, res, next) {
-  server.close();
+  console.log();
+  console.log(chalk.bold.green('Nice!'));
+  console.log('There are just a few more steps you need to complete yourself:');
+  console.log(chalk.bold.green('1') + '. Enter the following ' + chalk.bold.yellow('command') + ' in your terminal: ' +
+  chalk.bold.cyan.underline('npm start'));
+  publicIp.v4().then(ip => {
+    console.log(chalk.bold.green('2') + '. Visit ' + chalk.bold.yellow('one') + ' of the following IPs in your web browser:');
+    console.log('  ' + chalk.bold.green('Locally') + ': ' + chalk.bold.cyan('127.0.0.1:3000'));
+    console.log('  ' + chalk.bold.green('Externally') + ': ' + chalk.bold.cyan(ip + ':3000'));
+    server.close();
+    process.exit(0);
+  });
 });
 
 app.use('/', router);
@@ -312,7 +372,7 @@ var server = http.createServer(app);
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(port);
+server.listen(port, '0.0.0.0');
 server.on('error', onError);
 server.on('listening', onListening);
 
@@ -374,4 +434,10 @@ function onListening () {
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
+  publicIp.v4().then(ip => {
+    console.log('Welcome to ' + chalk.magenta.bold('Cellar') + '!');
+    console.log('Visit ' + chalk.bold.yellow('one') + ' of the following IPs in your web browser to begin setup:');
+    console.log('  ' + chalk.bold.green('Locally') + ': ' + chalk.bold.cyan('127.0.0.1:3000'));
+    console.log('  ' + chalk.bold.green('Externally') + ': ' + chalk.bold.cyan(ip + ':3000'));
+  });
 }
