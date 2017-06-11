@@ -8,12 +8,10 @@ var router = express.Router();
 
 /* GET login */
 router.get('/login', function (req, res, next) {
-  res.render('login',
-    {
-      title: 'Login',
-      backgroundColor: '#F06449',
-      layout: 'authlayout.hbs'
-    });
+  res.render('login', {
+    title: 'Login',
+    layout: 'authlayout.hbs'
+  });
 });
 
 /* POST login */
@@ -55,7 +53,6 @@ router.get('/register', function (req, res, next) {
     res.render('register',
       {
         title: 'Register',
-        backgroundColor: '#F06449',
         layout: 'authlayout.hbs'
       });
   }
@@ -63,7 +60,8 @@ router.get('/register', function (req, res, next) {
 
 /* POST register */
 router.post('/register', function (req, res, next) {
-  req.assert('name', 'Name cannot be blank').notEmpty();
+  req.assert('username', 'Username cannot be blank').notEmpty();
+  req.assert('username', 'Username is not valid').isAscii();
   req.assert('email', 'Email is not valid').isEmail();
   req.assert('email', 'Email cannot be blank').notEmpty();
   req.assert('password', 'Password must be at least 4 characters long').len(4);
@@ -82,32 +80,36 @@ router.post('/register', function (req, res, next) {
   User.findOne(
     {
       email: req.body.email
-    }, function (err, user) {
-    if (user || err) {
-      req.flash('error',
-        {
-          msg: 'The email address you have entered is already associated with another account.'
-        });
-      return res.redirect('/register');
-    }
-    user = new User(
-      {
-        username: req.body.name,
-        email: req.body.email,
-        password: req.body.password
-      });
-    user.save(function (err) {
+    },
+    function (err, user) {
       if (err) {
-        console.error(err);
+
       }
-      req.logIn(user, function (err) {
+      if (user) {
+        req.flash('error',
+          {
+            msg: 'The email address you have entered is already associated with another account.'
+          });
+        return res.redirect('/register');
+      }
+      user = new User(
+        {
+          username: req.body.username,
+          email: req.body.email,
+          password: req.body.password
+        });
+      user.save(function (err) {
         if (err) {
           console.error(err);
         }
-        res.redirect('/');
+        req.logIn(user, function (err) {
+          if (err) {
+            console.error(err);
+          }
+          res.redirect('/');
+        });
       });
     });
-  });
 });
 
 /* GET forgot */
@@ -118,7 +120,6 @@ router.get('/forgot', function (req, res) {
   res.render('forgot',
     {
       title: 'Forgot Password',
-      backgroundColor: '#F06449',
       layout: 'authlayout.hbs'
     });
 });
@@ -221,7 +222,6 @@ router.get('/reset/:token', function (req, res) {
       res.render('reset',
         {
           title: 'Password Reset',
-          backgroundColor: '#F06449',
           layout: 'authlayout.hbs'
         });
     });

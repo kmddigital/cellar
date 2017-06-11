@@ -1,0 +1,202 @@
+{{#is step 'instructions'}}
+  <form method="POST">
+    <h4 class="display-4 text-center">Welcome!</h4>
+    <p style="margin-bottom: .5rem;">You've already started your journey! This setup utility will walk you through installing Cellar.</p>
+    <p style="margin-bottom: 1rem;">Before continuing make sure you've installed and started a MongoDB
+      instance. Also, have your SMTP creditials ready from the mail provider of your choice.</p>
+    {{#if messages.error}}
+      <div role="alert" class="alert alert-danger">
+        {{#each messages.error}}
+          <div>{{msg}}</div>
+        {{/each}}
+      </div>
+    {{/if}}
+    {{#if messages.success}}
+      <div role="alert" class="alert alert-success">
+        {{#each messages.success}}
+          <div>{{msg}}</div>
+        {{/each}}
+      </div>
+    {{/if}}
+    <button type="submit" style="width: 100%" class="btn btn-lg btn-outline-primary">Continue</button>
+  </form>
+{{/is}}
+{{#is step 'title'}}
+  <form method="POST">
+    <h4 class="display-4 text-center">Title</h4>
+    <h6>First up, give your website a cool title.</h6>
+    <div class="form-group">
+      <label for="title">Website Title</label>
+      <input type="text" name="title" id="title" placeholder="Cool Title" class="form-control" autofocus>
+    </div>
+    {{#if messages.error}}
+      <div role="alert" class="alert alert-danger">
+        {{#each messages.error}}
+          <div>{{msg}}</div>
+        {{/each}}
+      </div>
+    {{/if}}
+    {{#if messages.success}}
+      <div role="alert" class="alert alert-success">
+        {{#each messages.success}}
+          <div>{{msg}}</div>
+        {{/each}}
+      </div>
+    {{/if}}
+    <button type="submit" style="width: 100%" class="btn btn-lg btn-outline-primary">Continue</button>
+  </form>
+{{/is}}
+{{#is step 'database'}}
+  <form method="POST">
+    <h4 class="display-4 text-center">Database</h4>
+    <h6>Next up, enter your MongoDB URL.</h6>
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input type="text" name="database" id="database" placeholder="mongodb://user:pass@localhost:27017" class="form-control" autofocus>
+    </div>
+    {{#if messages.error}}
+      <div role="alert" class="alert alert-danger">
+        {{#each messages.error}}
+          <div>{{msg}}</div>
+        {{/each}}
+      </div>
+    {{/if}}
+    {{#if messages.success}}
+      <div role="alert" class="alert alert-success">
+        {{#each messages.success}}
+          <div>{{msg}}</div>
+        {{/each}}
+      </div>
+    {{/if}}
+    <button type="submit" style="width: 100%" class="btn btn-lg btn-outline-primary">Continue</button>
+  </form>
+{{/is}}
+{{#is step 'mail'}}
+  <form method="POST">
+    <h4 class="display-4 text-center">Mail</h4>
+    <h6>Now, enter your SMTP details.</h6>
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input type="text" name="name" id="name" placeholder="Name" class="form-control" autofocus>
+    </div>
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" name="email" id="email" placeholder="Email" class="form-control">
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" name="password" id="password" placeholder="Password" class="form-control">
+    </div>
+    {{#if messages.error}}
+      <div role="alert" class="alert alert-danger">
+        {{#each messages.error}}
+          <div>{{msg}}</div>
+        {{/each}}
+      </div>
+    {{/if}}
+    {{#if messages.success}}
+      <div role="alert" class="alert alert-success">
+        {{#each messages.success}}
+          <div>{{msg}}</div>
+        {{/each}}
+      </div>
+    {{/if}}
+    <button type="submit" style="width: 100%" class="btn btn-lg btn-outline-primary">Continue</button>
+  </form>
+{{/is}}
+{{#is step 'auth'}}
+  <form method="POST">
+    <h4 class="display-4 text-center">Welcome!</h4>
+    <div class="form-group">
+      <label for="username">Username</label>
+      <input type="text" name="username" id="username" placeholder="Username" class="form-control" autofocus>
+    </div>
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" name="email" id="email" placeholder="Email" class="form-control">
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" name="password" id="password" placeholder="Password" class="form-control">
+    </div>
+    {{#if messages.error}}
+      <div role="alert" class="alert alert-danger">
+        {{#each messages.error}}
+          <div>{{msg}}</div>
+        {{/each}}
+      </div>
+    {{/if}}
+    {{#if messages.success}}
+      <div role="alert" class="alert alert-success">
+        {{#each messages.success}}
+          <div>{{msg}}</div>
+        {{/each}}
+      </div>
+    {{/if}}
+    <button type="submit" style="width: 100%" class="btn btn-lg btn-outline-primary">Continue</button>
+  </form>
+{{/is}}
+{{#is step 'final'}}
+  <form method="POST">
+    <h4 class="display-4 text-center">Final Step</h4>
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input type="text" name="name" id="name" placeholder="Name" class="form-control" autofocus>
+    </div>
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" name="email" id="email" placeholder="Email" class="form-control">
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" name="password" id="password" placeholder="Password" class="form-control">
+    </div>
+    {{#if messages.error}}
+      <div role="alert" class="alert alert-danger">
+        {{#each messages.error}}
+          <div>{{msg}}</div>
+        {{/each}}
+      </div>
+    {{/if}}
+    {{#if messages.success}}
+      <div role="alert" class="alert alert-success">
+        {{#each messages.success}}
+          <div>{{msg}}</div>
+        {{/each}}
+      </div>
+    {{/if}}
+    <button type="submit" style="width: 100%" class="btn btn-lg btn-outline-primary">Continue</button>
+  </form>
+{{/is}}
+{{#is step 'done'}}
+  <form method="POST">
+    <h4 class="display-4 text-center">Welcome!</h4>
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input type="text" name="name" id="name" placeholder="Name" class="form-control" autofocus>
+    </div>
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" name="email" id="email" placeholder="Email" class="form-control">
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" name="password" id="password" placeholder="Password" class="form-control">
+    </div>
+    {{#if messages.error}}
+      <div role="alert" class="alert alert-danger">
+        {{#each messages.error}}
+          <div>{{msg}}</div>
+        {{/each}}
+      </div>
+    {{/if}}
+    {{#if messages.success}}
+      <div role="alert" class="alert alert-success">
+        {{#each messages.success}}
+          <div>{{msg}}</div>
+        {{/each}}
+      </div>
+    {{/if}}
+    <button type="submit" style="width: 100%" class="btn btn-lg btn-outline-primary">Continue</button>
+  </form>
+{{/is}}

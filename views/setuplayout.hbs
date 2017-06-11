@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Cellar Setup</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
+    <link rel="icon" href="/setup/favicon.ico">
+    <meta name="theme-color" content="#FF0500">
+  </head>
+  <body style="background-color: #F06449">
+    <div class="container setup">
+      <div class="justify-content-center align-items-center">
+        <div class="row justify-content-center align-items-center">
+          <div class="card">
+            <div class="card-block">
+              {{{body}}}
+            </div>
+            <div class="card-block" style="background-color: #F3F3F3">
+              <p class="text-center">
+                Powered By Cellar
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script>
+       if (!window.jQuery) {
+          document.write('<script src="/js/jquery-3.2.1.min.js"><\/script>');
+       }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    {{#if jsFile}}<script src="/js/{{jsFile}}.js"></script>{{/if}}
+  </body>
+</html>

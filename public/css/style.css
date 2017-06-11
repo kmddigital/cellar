@@ -164,16 +164,16 @@ a.btn-secondary:focus, a.btn-secondary:hover {
 
 @media (min-width:600px)
 {
-  .login .card, .register .card, .forgot .card {
+  .login .card, .register .card, .forgot .card, .setup .card {
     width: 50%;
   }
 }
 
-.login .card-block p, .register .card-block p, .forgot .card-block p {
+.login .card-block p, .register .card-block p, .forgot .card-block p, .setup .card-block p {
   margin-bottom: 0;
 }
 
-.container.login, .container.register, .container.forgot, .justify-content-center.align-items-center {
+.container.login, .container.register, .container.forgot, .container.setup, .justify-content-center.align-items-center {
   height: 100%;
   min-height: 100%;
 }
@@ -182,23 +182,23 @@ a.btn-secondary:focus, a.btn-secondary:hover {
   color: #454545;
 }
 
-.login .btn-outline-primary, .register .btn-outline-primary, .forgot .btn-outline-primary {
+.login .btn-outline-primary, .register .btn-outline-primary, .forgot .btn-outline-primary, .setup .btn-outline-primary {
   color: #FF0500;
   background-color: #FFF;
   border-color: #FF0500;
   width: 100%;
 }
 
-.login .form-control:focus, .register .form-control:focus, .forgot .form-control:focus
+.login .form-control:focus, .register .form-control:focus, .forgot .form-control:focus, .setup .form-control:focus
 {
   border-color: #ff4f4d;
 }
 
-.login .btn-outline-primary:focus, .register .btn-outline-primary:focus, .forgot .btn-outline-primary:focus {
+.login .btn-outline-primary:focus, .register .btn-outline-primary:focus, .forgot .btn-outline-primary:focus, .setup .btn-outline-primary:focus {
   box-shadow: 0 0 0 2px rgba(255,5,0,.5);
 }
 
-.login .btn-outline-primary:hover, .register .btn-outline-primary:hover, .forgot .btn-outline-primary:hover {
+.login .btn-outline-primary:hover, .register .btn-outline-primary:hover, .forgot .btn-outline-primary:hover, .setup .btn-outline-primary:hover {
   color: #fff;
   background-color: #FF0500;
   border-color: #FF0500;
